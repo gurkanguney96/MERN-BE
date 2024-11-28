@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: harbor.niso.dev/pamis/mern-be:latest
+        imagePullPolicy: Always
+        env:
+        - name: MONGO_URI
+          value: "mongodb://admin:password@mongodb-service:27017/testdb"
+        ports:
+        - containerPort: 5050
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 5050
+      targetPort: 5050
+  type: ClusterIP
